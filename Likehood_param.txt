@@ -1,0 +1,9 @@
+###### LIKEHOOD name - mean - sigma - bool #### 
+Dc_insight	42	5	1
+Dl_insight	500	100	1
+Tp_insight	1605	100	1
+Thickness_reg	2.48	2.06	
+Dich_Reg		3.43	2.91	1
+Dich_reg_sig	0.0699	0.34621
+delta_rhom	100
+

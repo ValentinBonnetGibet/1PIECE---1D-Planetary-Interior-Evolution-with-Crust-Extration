@@ -1,0 +1,25 @@
+#####NUMERICAL PARAMETERS#######
+dt_min		2E5
+dt_max		3E7	
+dt_init		1E3
+DTMAX		3
+dr_min		3E3
+dr_max		8E3
+NC		25
+N_soliq		1000
+N_melt		1000
+T_ACC		5.0E9
+t_acc_m		0.5E9
+####BOOLEAN###
+unlinear_phi 		1
+LMBDdt_bol		1
+RK4			1
+Pessure_dep		1
+Steady			0
+ecriture_profil		1
+ecriture_time		1
+ecriture_tech		1
+URGENCE_STOP		0
+Advection_lith		1
+Advection_interf	1
+
