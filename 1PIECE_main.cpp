@@ -35,7 +35,7 @@ double const &Rp, double const &Rc, double const &f, double const &Vc, double co
 double const &Tm0, double const &dTc0, double const &Ts, double const &tstart, double const &tstop, double const &t_acc, double const &t_acc_m, double const &DTMAX, double const &fmag, double const &fbase,
 double const &Dl_init, double const &Dc_init, double const &dDl_init, double const &dDc_init, double const &LMBD_cr_i, double const &Phi_eff_i, double const &CH2O_p, double const &Sat_expo, double const &X1, double const &X2, double const &K_cr, double const &gamma_cr, double const &phi_min_cr,
 bool const  &RK4, bool const &steady, bool const &LMBDdt_bol, int const &N_melt, int const &Nc,
-double &t, double &Tm, double &Tc,double &Tp, double &Phicrmax_N, double &Phicrmax_S, double &Dl_N,double &Dl_S,double &Dc_N,double &Dc_S, double &dBLC_N, double &dBLC_S,std::tuple<double,double,double> &agecrust_N,std::tuple<double,double,double> &agecrust_S,
+double &t, double &Tm, double &Tc,double &Tp, double &Phicrmax_N, double &Phicrmax_S, double &Dl_N,double &Dl_S,double &Dc_N,double &Dc_S, double &dBLC_N, double &dBLC_S,std::tuple<double,double,double,double> &agecrust_N,std::tuple<double,double,double,double> &agecrust_S,
 double &LMBD_ath,double &LMBD_lith_N,double  &LMBD_lith_S,double &LMBD_cr_N,double  &LMBD_cr_S,double  &dmax_cr_N, double  &dmax_cr_S ,std::tuple<double,double>  &dTdz_N,std::tuple<double,double>  &dTdz_S,
 char *dossier_time, char *dossier_tech, char* dossier_profilN, char * dossier_profilS, bool const &ecrit_profil_b, bool const & ecrit_time_b,bool const & ecrit_tech_b, bool const &URG_STOP,bool const &adv_lith_bool, bool const &adv_interf_bool
 ){
@@ -89,6 +89,9 @@ std::get<1>(agecrust_S) = 0;
 
 std::get<2>(agecrust_N) = 0;
 std::get<2>(agecrust_S) = 0;
+
+std::get<3>(agecrust_N) = 0;
+std::get<3>(agecrust_S) = 0;
 
 double Rl_N2, Rl_S2, Rm_N2, Rm_S2;
 double Rl_N = Rp-Dl_N;
@@ -243,7 +246,7 @@ double T_avg;
 
 
 
-// Initial geometry of the ithosphere/crust 
+// Initial geometry of the lithosphere/crust 
 geothermo(THERMOGEO_N,N_N,Rp,Rl_N,Rm_N,k_cr,k_m,C_cr,C_m,rho_cr,rho_m,dDcdt_N,P_cr_N,P_lith_N,Hb_N,L_m,L_cr,fbase,fmag,gl,Tl,adv_lith_bool);
 geothermo(THERMOGEO_S,N_S,Rp,Rl_S,Rm_S,k_cr,k_m,C_cr,C_m,rho_cr,rho_m,dDcdt_S,P_cr_S,P_lith_S,Hb_S,L_m,L_cr,fbase,fmag,gl,Tl,adv_lith_bool);
 
@@ -285,12 +288,12 @@ bool interpol_bool =  1;
 // Time loop
 
 
-while( t < (tstop-tstart)*an_s && stop == 0 && Ra_avg > std::get<9>(rheology)*10.0)
+while( t < (tstop)*an_s && stop == 0 && Ra_avg > std::get<9>(rheology)*10.0)
 {
     
  
     // t1 = clock();
-    
+   
     // Heat production at the time t
     Internal_heat(P_cr_N,t,LMBD_cr_N,rho_cr,an_s,RAD);
     Internal_heat(P_cr_S,t,LMBD_cr_S,rho_cr,an_s,RAD);
@@ -337,8 +340,8 @@ while( t < (tstop-tstart)*an_s && stop == 0 && Ra_avg > std::get<9>(rheology)*10
     Rp,Rc,Vc,Ac,Ts,gl,gc,Tb,a_m,k_m,C_m,C_c,C_cr,rho_c,rho_m,
     rho_cr,L_m,LMBD_ath,LMBD_liq_N,LMBD_liq_S,Dref,solidus,liquidus,melt,rheology,RAD,Pm,an_s,ql_N,ql_S,epsi_c,contact,melt_bol, adv_interf_bool, melt_param, N_melt, Phi_eff_N, Phi_eff_S);
     
-    // std::cout << "dDldt_N 1-4 : "  << dDldt_N1 << ", " << dDldt_N2 << ", "  << dDldt_N3 << ", " << dDldt_N4 << std::endl;
-    // std::cout << "dTmdt_N 1-4 : "  << dtmdt1 << ", " << dtmdt2 << ", "  << dtmdt3 << ", " <<dtmdt4 << std::endl;
+    
+    //  std::cout <<"Tm = " << Tm << ", dTmdt_N 1-4 : "  << dtmdt1 << ", " << dtmdt2 << ", "  << dtmdt3 << ", " <<dtmdt4 << std::endl;
     dtmdt = (dtmdt1 + 2.* dtmdt2 + 2.* dtmdt3 + dtmdt4)/6.;
     dtcdt = (dtcdt1 + 2.* dtcdt2 + 2.* dtcdt3 + dtcdt4)/6.;
     dDldt_N = (dDldt_N1 + 2.* dDldt_N2 + 2.* dDldt_N3 + dDldt_N4)/6.;
@@ -592,7 +595,11 @@ while( t < (tstop-tstart)*an_s && stop == 0 && Ra_avg > std::get<9>(rheology)*10
     Rm_N2 = Rm_N - dDcdt_N * dt;
     Rm_S2 = Rm_S - dDcdt_S * dt;
 
+    // if(Rm_N2 < Rm_N *1/0.95 ){std::get<3>(agecrust_N) = t/an_s;}
+    // if(Rm_S2 < Rm_S *1/0.95 ){std::get<3>(agecrust_S) = t/an_s;}
 
+    if(dDcdt_N > 1E-13){std::get<3>(agecrust_N) = t/an_s;}
+    if(dDcdt_S > 1E-13){std::get<3>(agecrust_S) = t/an_s;}
 
     if(Rm_N2 < Rl_N2){Rl_N2 = Rm_N2; dDldt_N=(Rl_N2-Rl_N)/dt;}
     if(Rm_S2 < Rl_S2){Rl_S2 = Rm_S2; dDldt_S=(Rl_S2-Rl_S)/dt;}
@@ -694,7 +701,8 @@ double &dU_tot, double &Qs, double &U_old, double &H_tot, double &T_avg){
     T_cm = epsi_m * Tm;
     U_c = rho_c * Vc * Cc * Tc * epsi_c;
     H_cm = Vcm * Path;
-    
+   
+
    for(int i = 0; i < N_N; i++){
     if(i<Nm_N){
         U_N = U_N +  rho_m * dVN_r(i) * ( Cm * T_N(i) +  L_m * PhiN(i));
@@ -705,7 +713,7 @@ double &dU_tot, double &Qs, double &U_old, double &H_tot, double &T_avg){
         U_N = U_N + rho_cr * dVN_r(i) * ( Ccr  * T_N(i) +  L_cr * PhiN(i));
         
     }
-    T_avg_N = T_N(i)* dVN_r(i);
+    T_avg_N = T_avg_N + T_N(i)* dVN_r(i);
     H_N = H_N + PN_r(i)*dVN_r(i);
     }
 
@@ -717,7 +725,7 @@ double &dU_tot, double &Qs, double &U_old, double &H_tot, double &T_avg){
     else{
         U_S = U_S + rho_cr * dVS_r(i) * ( Ccr  * T_S(i) +  L_cr * PhiS(i));
     }
-    T_avg_S = T_S(i)* dVS_r(i);
+    T_avg_S = T_avg_S + T_S(i)* dVS_r(i);
     H_S = H_S + PS_r(i)*dVS_r(i);
   
    }

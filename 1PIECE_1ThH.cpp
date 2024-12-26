@@ -50,17 +50,17 @@ double Tm,Tp,Tc,Phicrmax_N = 0,Phicrmax_S = 0,Dl_N,Dl_S,Dc_N,Dc_S,LMBD_ath,LMBD_
 double  dBLC_N,dBLC_S;
 std::tuple<double,double> dTdz_N;
 std::tuple<double,double> dTdz_S;
-std::tuple<double,double,double> agecrust_N;
-std::tuple<double,double,double> agecrust_S;
+std::tuple<double,double,double,double> agecrust_N;
+std::tuple<double,double,double,double> agecrust_S;
 
-double Phi_eff_i = 0.1222;
+double Phi_eff_i = 0.2;
 
 double rho_c = std::get<4>(thermo);
 double Dref = 0.2/3.*(pow(Rp,3.)-pow(Rc,3.))/pow(Rp,2.);
 double Vc = 4./3.*M_PI*pow(Rc,3.);
 double Ac = 4.*M_PI*pow(Rc,2.);
 double Vp = 4./3.*M_PI*pow(Rp,3.) - Vc;
-double t = 0;
+double t = t0 *std::get<11>(thermo);
 double rho_p = (Masse_Mars - Vc*rho_c)/Vp;
 
 if(unlinear_phi == 0){std::get<2>(melt_param)=1.0;}
@@ -90,6 +90,8 @@ t,Tm,Tc,Tp,Phicrmax_N,Phicrmax_S,Dl_N,Dl_S,Dc_N,Dc_S,dBLC_N,dBLC_S,agecrust_N,ag
 dossier_time,dossier_tech, dossier_profilN,dossier_profilS,ecrit_profil_b,ecrit_time_b,ecrit_tech_b,URG_STOP,adv_lith_bool,adv_interf_bool
 );
 
+std::cout << "Temps extraction nord (Gyr) : "  << std::get<3>(agecrust_N)/1E9  << std::endl;
+std::cout << "Temps extraction sud (Gyr) :"  << std::get<3>(agecrust_S)/1E9  << std::endl;
 
 
 t2 =clock();
