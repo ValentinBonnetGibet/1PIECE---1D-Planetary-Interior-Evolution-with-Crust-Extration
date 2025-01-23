@@ -165,9 +165,57 @@ std::string tmp3 = adresse +"_profilS.txt";
 dossier_profilS = &tmp3[0];
 }
 
+// New values 
 
 std::get<0>(rheology) = eta0_exp(eta_i);
 std::get<0>(melt) = k0_exp(k_i);
+
+// Calculate initial Tm0 for a maximum melt fraction of 0.3 at Tm 
+// needed parameters
+
+double eta_0 = eta0_exp(eta_i);
+double A =std::get<1>(rheology);
+double R = std::get<2>(rheology);
+double V = std::get<3>(rheology);
+double Tref =std::get<5>(rheology);
+double Pref =std::get<6>(rheology);
+double beta_u = std::get<7>(rheology);
+double Ra_crit_u = std::get<9>(rheology);
+double C_m=std::get<0>(thermo);
+double rho_cr=std::get<3>(thermo);
+double k_m=std::get<5>(thermo);
+double a_m=std::get<7>(thermo);
+
+double DTsolidus=std::get<5>(melt)*Dc_init/Dref;
+double delta_guess = 75E3;
+
+// First Guess using 75E3 for delta_u
+
+double Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init + delta_guess) * gl)/1E9 ;
+double Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(liquidus)*Pm_guess*Pm_guess+std::get<3>(liquidus)*Pm_guess*Pm_guess*Pm_guess;
+double Tsol_guess = std::get<0>(solidus)+std::get<1>(solidus)*Pm_guess+std::get<2>(solidus)*Pm_guess*Pm_guess+std::get<3>(solidus)*Pm_guess*Pm_guess*Pm_guess+DTsolidus;
+double Tm0_guess = 0.3 * (Tliq_guess-Tsol_guess) + Tsol_guess;
+
+
+// Calculating delta_u with Tm0 by calculating Ra at Tm
+
+double Tl_guess = Tm0_guess - std::get<4>(rheology) * R/A * Tm0_guess*Tm0_guess;
+double Dm = k_m / rho_p / C_m;
+double eta_guess = eta_0*std::exp(  (A + Pm_guess*1E9 * V )/ (R  * Tm0_guess ) - (A + Pref * V) / ( Tref * R)  ) ;
+double Ra_guess = a_m*rho_p*gl* (Tm0_guess-Tl_guess) *pow(Rp-Rc,3.)/Dm/eta_guess ;
+
+delta_guess = (Rp-Dl_init-Rc) * pow(Ra_crit_u/Ra_guess,beta_u);
+
+// Second Guess using delta_guess for delta_u
+Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init + delta_guess) * gl)/1E9 ;
+
+Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(liquidus)*Pm_guess*Pm_guess+std::get<3>(liquidus)*Pm_guess*Pm_guess*Pm_guess;
+Tsol_guess = std::get<0>(solidus)+std::get<1>(solidus)*Pm_guess+std::get<2>(solidus)*Pm_guess*Pm_guess+std::get<3>(solidus)*Pm_guess*Pm_guess*Pm_guess+DTsolidus;
+
+Tm0 = 0.3 * (Tliq_guess-Tsol_guess) + Tsol_guess;
+std::cout <<"New Tm0 =" << Tm0 <<", Ra_init = " << Ra_guess << ", delta_init = " << delta_guess << ", eta_init = " << eta_guess << std::endl;
+// Calculation
+
 std::cout << rank << " : rank," << i <<  " / " << N_tot << " done" << "  eta0 = " << eta0_exp(eta_i) << "  k0 = " << k0_exp(k_i) << "         nom dossier :  " << dossier_time << std::endl;
 
 t1_interm = clock();
@@ -181,6 +229,7 @@ t,Tm,Tc,Tp,Phicrmax_N,Phicrmax_S,Dl_N,Dl_S,Dc_N,Dc_S,dBLC_N,dBLC_S,agecrust_N,ag
 dossier_time,dossier_tech, dossier_profilN,dossier_profilS,ecrit_profil_b,ecrit_time_b,ecrit_tech_b,URG_STOP,adv_lith_bool,adv_interf_bool
 );
 
+
 Volume(Vm,Rp-Dc_N,Rp-Dc_S,Rc,f);
 Vcr=Vp-Vm;
 rho_m=(Vp*rho_p-Vcr*std::get<3>(thermo))/Vm;
@@ -189,8 +238,9 @@ rho_m=(Vp*rho_p-Vcr*std::get<3>(thermo))/Vm;
 t2_interm = clock();
 std::cout << rank << " : rank," <<  "  time :" << (float) (t2_interm-t1_interm)/CLOCKS_PER_SEC <<", test_run : "<< test_run <<std::endl;
 
+
 FILE * resume = fopen(adress_resum ,"a");
-std::fprintf(resume, "%i %i %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",i,rank,t,k0_exp(k_i),eta0_exp(eta_i),Tp, Tm, Dc_N, Dc_S, Dl_N, Dl_S, Tc, std::get<3>(agecrust_N) ,std::get<3>(agecrust_S), rho_m,LMBD_cr_N,LMBD_cr_S,LMBD_lith_N,LMBD_lith_S,LMBD_ath);
+std::fprintf(resume, "%i %i %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",i,rank,t,k0_exp(k_i),eta0_exp(eta_i),Tp, Tm,Tm0, Dc_N, Dc_S, Dl_N, Dl_S, Tc, std::get<3>(agecrust_N) ,std::get<3>(agecrust_S), rho_m,LMBD_cr_N,LMBD_cr_S,LMBD_lith_N,LMBD_lith_S,LMBD_ath);
 fclose(resume);
 
 
