@@ -21,7 +21,6 @@ t1 = clock();
 std::tuple<double,double,double,double,double,double,double,double,double,double,double> rheology;
 std::tuple<double,double,double,double,double,double,double,double> melt;
 std::tuple<bool,double,double,double,double,double,double,double,double> melt_param;
-std::tuple<double,double,double,double,double,double,double,double> unlinear_table;
 std::tuple<double,double,double,double,double,double,double,double,double,double,double,double,double> thermo;
 Eigen::MatrixXd RAD = Eigen::MatrixXd::Zero(4,4);
 
@@ -71,8 +70,8 @@ double Vp = 4./3.*M_PI*pow(Rp,3.) - Vc;
 double rho_p = (Masse_Mars - Vc*rho_c)/Vp;
 double rho_m;
 double Vm,Vcr;
-double t = 0;
-if(unlinear_phi == 0){std::get<1>(unlinear_table)=1;}
+double t = 0*std::get<11>(thermo);
+if(unlinear_phi == 0){std::get<2>(melt_param)=1.0;}
 N_tot = (N_k0 * N_eta0) / nb_procs;
 
 
@@ -193,7 +192,7 @@ std::cout << rank << " : rank," <<  "  time :" << (float) (t2_interm-t1_interm)/
 
 
 FILE * resume = fopen(adress_resum ,"a");
-std::fprintf(resume, "%i %i %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",i,rank,t,Tm0_vec(k_i),eta0_exp(eta_i),Tp, Tm, Dc_N, Dc_S, Dl_N, Dl_S, Tc, std::get<3>(agecrust_N) ,std::get<3>(agecrust_S), rho_m,LMBD_cr_N,LMBD_cr_S,LMBD_lith_N,LMBD_lith_S,LMBD_ath);
+std::fprintf(resume, "%i %i %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",i,rank,t,Tm0,eta0_exp(eta_i),Tp, Tm, Dc_N, Dc_S, Dl_N, Dl_S, Tc, std::get<3>(agecrust_N) ,std::get<3>(agecrust_S), rho_m,LMBD_cr_N,LMBD_cr_S,LMBD_lith_N,LMBD_lith_S,LMBD_ath);
 fclose(resume);
 
 
