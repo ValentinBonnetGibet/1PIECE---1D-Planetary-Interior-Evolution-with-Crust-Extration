@@ -212,7 +212,7 @@ Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init + delta_guess) * gl
 Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(liquidus)*Pm_guess*Pm_guess+std::get<3>(liquidus)*Pm_guess*Pm_guess*Pm_guess;
 Tsol_guess = std::get<0>(solidus)+std::get<1>(solidus)*Pm_guess+std::get<2>(solidus)*Pm_guess*Pm_guess+std::get<3>(solidus)*Pm_guess*Pm_guess*Pm_guess+DTsolidus;
 
-Tm0 = 0.3 * (Tliq_guess-Tsol_guess) + Tsol_guess;
+Tm0 = 0.25 * (Tliq_guess-Tsol_guess) + Tsol_guess;
 std::cout <<"New Tm0 =" << Tm0 <<", Ra_init = " << Ra_guess << ", delta_init = " << delta_guess << ", eta_init = " << eta_guess << std::endl;
 // Calculation
 
