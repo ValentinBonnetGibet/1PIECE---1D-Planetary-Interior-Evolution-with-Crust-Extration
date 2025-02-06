@@ -194,7 +194,7 @@ double delta_guess = 75E3;
 double Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init + delta_guess) * gl)/1E9 ;
 double Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(liquidus)*Pm_guess*Pm_guess+std::get<3>(liquidus)*Pm_guess*Pm_guess*Pm_guess;
 double Tsol_guess = std::get<0>(solidus)+std::get<1>(solidus)*Pm_guess+std::get<2>(solidus)*Pm_guess*Pm_guess+std::get<3>(solidus)*Pm_guess*Pm_guess*Pm_guess+DTsolidus;
-double Tm0_guess = 0.3 * (Tliq_guess-Tsol_guess) + Tsol_guess;
+double Tm0_guess = 0.25 * (Tliq_guess-Tsol_guess) + Tsol_guess;
 
 
 // Calculating delta_u with Tm0 by calculating Ra at Tm
