@@ -33,7 +33,7 @@ bool Parametric_model(std::tuple<double,double,double,double,double,double,doubl
 Eigen::MatrixXd RAD, std::tuple<double,double,double,double,double,double> const &solidus, std::tuple<double,double,double,double,double,double> const &liquidus,
 double const &Rp, double const &Rc, double const &f, double const &Vc, double const &Ac, double const &Vp, double const &rho_p, double const &gc, double const &gl, double const &dr_min, double const dr_max,double const &Dref, double const &dt_max, double const &dt_min, double const &dt_init,
 double const &Tm0, double const &dTc0, double const &Ts, double const &tstart, double const &tstop, double const &t_acc, double const &t_acc_m, double const &DTMAX, double const &fmag, double const &fbase,
-double const &Dl_init, double const &Dc_init, double const &dDl_init, double const &dDc_init, double const &LMBD_cr_i, double const &Phi_eff_i, double const &CH2O_p, double const &Sat_expo, double const &X1, double const &X2, double const &K_cr, double const &gamma_cr, double const &phi_min_cr,
+double const &Dl_init, double const &Dc_init, double const &dDl_init, double const &dDc_init, double const &LMBD_cr_i, double const &Phi_vis_i, double const &CH2O_p, double const &Sat_expo, double const &X1, double const &X2, double const &K_cr, double const &gamma_cr, double const &phi_min_cr,
 bool const  &RK4, bool const &steady, bool const &LMBDdt_bol, int const &N_melt, int const &Nc,
 double &t, double &Tm, double &Tc,double &Tp, double &Phicrmax_N, double &Phicrmax_S, double &Dl_N,double &Dl_S,double &Dc_N,double &Dc_S, double &dBLC_N, double &dBLC_S,std::tuple<double,double,double,double> &agecrust_N,std::tuple<double,double,double,double> &agecrust_S,
 double &LMBD_ath,double &LMBD_lith_N,double  &LMBD_lith_S,double &LMBD_cr_N,double  &LMBD_cr_S,double  &dmax_cr_N, double  &dmax_cr_S ,std::tuple<double,double>  &dTdz_N,std::tuple<double,double>  &dTdz_S,
@@ -214,8 +214,10 @@ double eta_u_N, eta_u_S;
 double Phi_avg;
 double Phi_N;
 double Phi_S;
-double Phi_eff_N = Phi_eff_i;
-double Phi_eff_S = Phi_eff_i;
+double Phi_eff_N ;
+double Phi_eff_S ;
+double Phi_vis_N = Phi_vis_i;
+double Phi_vis_S = Phi_vis_i;
 double Phi_cr_avg_N;
 double Phi_cr_avg_S;
 double Phi_lith_avg_N;
@@ -311,7 +313,7 @@ while( t < (tstop)*an_s && stop == 0 && Ra_avg > std::get<9>(rheology)*10.0)
     derivate(dtmdt1,dtcdt1,dDcdt_N1,dDcdt_S1,dDldt_N1,dDldt_S1,
     P_ath,Tm,Tc,f,Rl_N,Rl_S,Dc_N,Dc_S,
     Rp,Rc,Vc,Ac,Ts,gl,gc,Tb,a_m,k_m,C_m,C_c,C_cr,rho_c,rho_m,
-    rho_cr,L_m,LMBD_ath,LMBD_liq_N,LMBD_liq_S,Dref,solidus,liquidus,melt,rheology,RAD,Pm,an_s,ql_N,ql_S,epsi_c,contact,melt_bol,adv_interf_bool,melt_param,N_melt,
+    rho_cr,L_m,LMBD_ath,LMBD_liq_N,LMBD_liq_S,Dref,solidus,liquidus,melt,rheology,RAD,Pm,an_s,ql_N,ql_S,epsi_c,contact,melt_bol,adv_interf_bool,melt_param,N_melt, Phi_vis_N, Phi_vis_S,
     Tl, epsi_m, Ra_avg, dBLH, dBLC_N, dBLC_S,dBLC_avg, eta_u_N,eta_u_S, Phi_avg, Phi_N, Phi_S, Phi_eff_N, Phi_eff_S, Va_avg, dmadtm, qm_N, qm_S, qcr_N, qcr_S, qc,St
 );  
     if(t == 0){ dt = dt_init*an_s;} // Initial time step in the parameters
@@ -328,17 +330,17 @@ while( t < (tstop)*an_s && stop == 0 && Ra_avg > std::get<9>(rheology)*10.0)
     derivate(dtmdt2,dtcdt2,dDcdt_N2,dDcdt_S2,dDldt_N2,dDldt_S2,
     t+dt/2,Tm+dtmdt1*dt/2.,Tc+dtcdt1*dt/2.,f,Rl_N-dDldt_N1*dt/2.,Rl_S-dDldt_S1*dt/2.,Dc_N+dDcdt_N1*dt/2.,Dc_S+dDcdt_S1*dt/2.,
     Rp,Rc,Vc,Ac,Ts,gl,gc,Tb,a_m,k_m,C_m,C_c,C_cr,rho_c,rho_m,
-    rho_cr,L_m,LMBD_ath,LMBD_liq_N,LMBD_liq_S,Dref,solidus,liquidus,melt,rheology,RAD,Pm,an_s,ql_N,ql_S,epsi_c,contact,melt_bol,adv_interf_bool, melt_param, N_melt, Phi_eff_N, Phi_eff_S);
+    rho_cr,L_m,LMBD_ath,LMBD_liq_N,LMBD_liq_S,Dref,solidus,liquidus,melt,rheology,RAD,Pm,an_s,ql_N,ql_S,epsi_c,contact,melt_bol,adv_interf_bool, melt_param, N_melt, Phi_vis_N, Phi_vis_S);
     
     derivate(dtmdt3,dtcdt3,dDcdt_N3,dDcdt_S3,dDldt_N3,dDldt_S3,
     t+dt/2.,Tm+dtmdt2*dt/2.,Tc+dtcdt2*dt/2.,f,Rl_N-dDldt_N2*dt/2.,Rl_S-dDldt_S2*dt/2.,Dc_N+dDcdt_N2*dt/2.,Dc_S+dDcdt_S2*dt/2.,
     Rp,Rc,Vc,Ac,Ts,gl,gc,Tb,a_m,k_m,C_m,C_c,C_cr,rho_c,rho_m,
-    rho_cr,L_m,LMBD_ath,LMBD_liq_N,LMBD_liq_S,Dref,solidus,liquidus,melt,rheology,RAD,Pm,an_s,ql_N,ql_S,epsi_c,contact,melt_bol, adv_interf_bool, melt_param,N_melt, Phi_eff_N, Phi_eff_S);
+    rho_cr,L_m,LMBD_ath,LMBD_liq_N,LMBD_liq_S,Dref,solidus,liquidus,melt,rheology,RAD,Pm,an_s,ql_N,ql_S,epsi_c,contact,melt_bol, adv_interf_bool, melt_param,N_melt, Phi_vis_N, Phi_vis_S);
     
     derivate(dtmdt4,dtcdt4,dDcdt_N4,dDcdt_S4,dDldt_N4,dDldt_S4,
     t+dt,Tm+dtmdt3*dt,Tc+dtcdt3*dt,f,Rl_N-dDldt_N3*dt,Rl_S-dDldt_S3*dt,Dc_N+dDcdt_N3*dt,Dc_S+dDcdt_S3*dt,
     Rp,Rc,Vc,Ac,Ts,gl,gc,Tb,a_m,k_m,C_m,C_c,C_cr,rho_c,rho_m,
-    rho_cr,L_m,LMBD_ath,LMBD_liq_N,LMBD_liq_S,Dref,solidus,liquidus,melt,rheology,RAD,Pm,an_s,ql_N,ql_S,epsi_c,contact,melt_bol, adv_interf_bool, melt_param, N_melt, Phi_eff_N, Phi_eff_S);
+    rho_cr,L_m,LMBD_ath,LMBD_liq_N,LMBD_liq_S,Dref,solidus,liquidus,melt,rheology,RAD,Pm,an_s,ql_N,ql_S,epsi_c,contact,melt_bol, adv_interf_bool, melt_param, N_melt, Phi_vis_N, Phi_vis_S);
     
     
     //  std::cout <<"Tm = " << Tm << ", dTmdt_N 1-4 : "  << dtmdt1 << ", " << dtmdt2 << ", "  << dtmdt3 << ", " <<dtmdt4 << std::endl;
@@ -358,7 +360,7 @@ while( t < (tstop)*an_s && stop == 0 && Ra_avg > std::get<9>(rheology)*10.0)
     derivate(dtmdt,dtcdt,dDcdt_N,dDcdt_S,dDldt_N,dDldt_S,
     P_ath,Tm,Tc,f,Rl_N,Rl_S,Dc_N,Dc_S,
     Rp,Rc,Vc,Ac,Ts,gl,gc,Tb,a_m,k_m,C_m,C_c,C_cr,rho_c,rho_m,
-    rho_cr,L_m,LMBD_ath,LMBD_liq_N,LMBD_liq_S,Dref,solidus,liquidus,melt,rheology,RAD,Pm,an_s,ql_N,ql_S,epsi_c,contact,melt_bol,adv_interf_bool,melt_param, N_melt,
+    rho_cr,L_m,LMBD_ath,LMBD_liq_N,LMBD_liq_S,Dref,solidus,liquidus,melt,rheology,RAD,Pm,an_s,ql_N,ql_S,epsi_c,contact,melt_bol,adv_interf_bool,melt_param, N_melt, Phi_vis_N, Phi_vis_S,
     Tl, epsi_m, Ra_avg, dBLH, dBLC_N, dBLC_S,dBLC_avg, eta_u_N,eta_u_S, Phi_avg, Phi_N, Phi_S, Phi_eff_N, Phi_eff_S, Va_avg, dmadtm, qm_N, qm_S, qcr_N, qcr_S, qc, St
 );
     if(t == 0){ dt = dt_init*an_s;} else{

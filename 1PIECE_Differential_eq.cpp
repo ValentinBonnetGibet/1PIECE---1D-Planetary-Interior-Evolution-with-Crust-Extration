@@ -461,7 +461,7 @@ double const &Rp, double const &Rc, double const &Vc, double const &Ac, double c
 double const &C_cr,double const &rho_c,double const &rho_m,double const &rho_cr,double const &L,double const &LMBD_ath, double const &LMBD_liq_N, double const &LMBD_liq_S, double const &Dref,
 std::tuple<double,double,double,double,double,double> const &solidus, std::tuple<double,double,double,double,double,double> const &liquidus, std::tuple<double,double,double,double,double,double,double,double> const &melt,
 std::tuple<double,double,double,double,double,double,double,double,double,double,double> const &rheology, Eigen::MatrixXd const &RAD,
-std::tuple<double,double,double> const &Pm, double const &an_s, double const &ql_N, double const &ql_S, double const &epsi_c, std::tuple<bool,bool> contact, bool const &melt_bol,  double const &adv_interf_bool, std::tuple<bool,double,double,double,double,double,double,double,double> const &melt_param, int const &N_melt,
+std::tuple<double,double,double> const &Pm, double const &an_s, double const &ql_N, double const &ql_S, double const &epsi_c, std::tuple<bool,bool> contact, bool const &melt_bol,  double const &adv_interf_bool, std::tuple<bool,double,double,double,double,double,double,double,double> const &melt_param, int const &N_melt, double &Phi_vis_N, double &Phi_vis_S,
 double &Tl, double &epsi_m,double &Ra_avg, double &dBLH, double &dBLC_N,  double &dBLC_S, double &dBLC_avg, double &eta_u_N,double &eta_u_S, double &Phi_avg,double &Phi_N,double &Phi_S, double &Phi_eff_N, double &Phi_eff_S, double &Va_avg, double &dmadtm, double &qm_N, double &qm_S, double &qcr_N, double &qcr_S, double &qc, double &St
 ){
 
@@ -469,8 +469,12 @@ double &Tl, double &epsi_m,double &Ra_avg, double &dBLH, double &dBLC_N,  double
     
     
     double Vm;
+    double Vm_N, Vm_S;
+   
     
     Volume(Vm,Rl_N,Rl_S,Rc,f);
+    Vm_N = f* Vm ;
+    Vm_S = (1-f) * Vm;
     double Am_N=4*M_PI*Rl_N*Rl_N*f;
     double Am_S=4*M_PI*Rl_S*Rl_S*(1-f);
     double Rl = pow((f*pow(Rl_N,3.)+(1-f)*pow(Rl_S,3.)),1./3.);
@@ -493,8 +497,8 @@ double &Tl, double &epsi_m,double &Ra_avg, double &dBLH, double &dBLC_N,  double
     double beta_c = std::get<8>(rheology);
 
   
-    eta_u_N=eta_0*std::exp(  (A + std::get<0>(Pm) * V )/ (R  * Tm ) - (A + Pref * V) / ( Tref * R) + std::get<10>(rheology) * Phi_eff_N ) ;
-    eta_u_S=eta_0*std::exp(  (A + std::get<1>(Pm) * V ) / (R  * Tm ) - (A + Pref * V) / ( Tref * R) + std::get<10>(rheology) * Phi_eff_N ) ;
+    eta_u_N=eta_0*std::exp(  (A + std::get<0>(Pm) * V )/ (R  * Tm ) - (A + Pref * V) / ( Tref * R) + std::get<10>(rheology) * Phi_vis_N ) ;
+    eta_u_S=eta_0*std::exp(  (A + std::get<1>(Pm) * V ) / (R  * Tm ) - (A + Pref * V) / ( Tref * R) + std::get<10>(rheology) * Phi_vis_S ) ;
     double eta_u_avg=eta_0*std::exp(  (A + P_mean * V ) / (R  * Tm ) - (A + Pref * V) / ( Tref * R)  ) ;
    
     double Ra_u_N=a_m*rho_m*gl* DT_u *pow(Rl_N-Rc,3.)/D_m/eta_u_N;
@@ -611,6 +615,9 @@ double &Tl, double &epsi_m,double &Ra_avg, double &dBLH, double &dBLC_N,  double
         
         }
     
+    Phi_vis_N = Phi_N*Va_N / Vm_N;
+    Phi_vis_S = Phi_S*Va_S / Vm_S;
+    std::cout <<" Phi vis N = " <<Phi_vis_N << ", phi vis S = " << Phi_vis_S << std::endl;
     epsi_m = epsilon(Tm,Tc,Tl,Tb,Rc,Rl,dBLH,dBLC_avg);
     dtmdt = (-(qm_N+qcr_N)*Am_N-(qm_S+qcr_S)*Am_S+Qm*Vm+qc*Ac)/(C_m*rho_m*Vm*epsi_m*(St+1));
     dtcdt = (-qc * Ac)/(C_c*rho_c*Vc*epsi_c);
