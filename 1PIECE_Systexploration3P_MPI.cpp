@@ -187,22 +187,36 @@ double k_m=std::get<5>(thermo);
 double a_m=std::get<7>(thermo);
 
 double DTsolidus=std::get<5>(melt)*Dc_init/Dref;
-double delta_guess = 75E3;
-
+double delta_guess = 50E3;
+double Phi_guess,Phi_eff_guess,Va_guess,dmadtm_guess,Rl_guess,LMBD_guess,Vm_guess,Ra_guess,eta_guess;
+Rl_guess = Rp - (Dl_init-Dc_init + delta_guess) ;
 // First Guess using 75E3 for delta_u
 
-double Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init + delta_guess) * gl)/1E9 ;
+double Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Rp-Rl_guess-Dc_init) * gl)/1E9 ;
 double Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(liquidus)*Pm_guess*Pm_guess+std::get<3>(liquidus)*Pm_guess*Pm_guess*Pm_guess;
 double Tsol_guess = std::get<0>(solidus)+std::get<1>(solidus)*Pm_guess+std::get<2>(solidus)*Pm_guess*Pm_guess+std::get<3>(solidus)*Pm_guess*Pm_guess*Pm_guess+DTsolidus;
-double Tm0_guess = 0.3 * (Tliq_guess-Tsol_guess) + Tsol_guess;
+double Tm0_guess_new = 0.3 * (Tliq_guess-Tsol_guess) + Tsol_guess;
 
+double Tm0_guess = 0;
 
+while (std::abs(Tm0_guess - Tm0_guess_new) > 1 )
+{
+
+Tm0_guess = Tm0_guess_new;
 // Calculating delta_u with Tm0 by calculating Ra at Tm
-
 double Tl_guess = Tm0_guess - std::get<4>(rheology) * R/A * Tm0_guess*Tm0_guess;
 double Dm = k_m / rho_p / C_m;
-double eta_guess = eta_0*std::exp(  (A + Pm_guess*1E9 * V )/ (R  * Tm0_guess ) - (A + Pref * V) / ( Tref * R) + std::get<10>(rheology) * Phi_vis_i   ) ;
-double Ra_guess = a_m*rho_p*gl* (Tm0_guess-Tl_guess) *pow(Rp-Rc,3.)/Dm/eta_guess ;
+
+melting(Phi_guess,Phi_eff_guess,Va_guess,dmadtm_guess,Tm0_guess,a_m,C_m,gc,gl,N_melt,Dref,std::get<4>(melt),std::get<5>(melt),rho_cr,rho_m,Dc_init,Dc_init,Rl_guess,Rp,delta_guess,std::get<3>(melt),std::get<6>(melt),
+melt_param, LMBD_guess,
+solidus,liquidus,rheology);  
+
+Volume(Vm_guess,Rl_guess,Rl_guess,Rc,0);  
+
+Phi_vis_i = Phi_guess * Va_guess / Vm_guess;
+
+eta_guess = eta_0*std::exp(  (A + Pm_guess*1E9 * V )/ (R  * Tm0_guess ) - (A + Pref * V) / ( Tref * R) + std::get<10>(rheology) * Phi_vis_i   ) ;
+Ra_guess = a_m*rho_p*gl* (Tm0_guess-Tl_guess) *pow(Rp-Rc,3.)/Dm/eta_guess ;
 
 delta_guess = (Rp-Dl_init-Rc) * pow(Ra_crit_u/Ra_guess,beta_u);
 
@@ -212,7 +226,12 @@ Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init + delta_guess) * gl
 Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(liquidus)*Pm_guess*Pm_guess+std::get<3>(liquidus)*Pm_guess*Pm_guess*Pm_guess;
 Tsol_guess = std::get<0>(solidus)+std::get<1>(solidus)*Pm_guess+std::get<2>(solidus)*Pm_guess*Pm_guess+std::get<3>(solidus)*Pm_guess*Pm_guess*Pm_guess+DTsolidus;
 
-Tm0 = 0.3 * (Tliq_guess-Tsol_guess) + Tsol_guess;
+Tm0_guess_new = 0.3 * (Tliq_guess-Tsol_guess) + Tsol_guess;
+    /* code */
+}
+
+Tm0 = Tm0_guess_new;
+
 std::cout <<"New Tm0 =" << Tm0 <<", Ra_init = " << Ra_guess << ", delta_init = " << delta_guess << ", eta_init = " << eta_guess << std::endl;
 // Calculation
 
