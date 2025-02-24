@@ -248,7 +248,7 @@ return test;
 
 
 
-bool lecture_explo(std::string const &adresse,double &k0_init,double &k0_end,double &eta0_init,double &eta0_end, int &N_k0, int &N_eta0){
+bool lecture_explo(std::string const &adresse,double &k0_init,double &k0_end,double &eta0_init,double &eta0_end, int &N_k0, int &N_eta0,double &Phi_init,double &Phi_obj){
 
 std::ifstream fichier(adresse);
 bool test = true;
@@ -262,7 +262,7 @@ if(fichier)
         fichier.ignore();
 
         fichier >> text_ign >> k0_init >> text_ign >> k0_end >> text_ign >> eta0_init >> text_ign >>
-        eta0_end >> text_ign >> N_k0 >> text_ign >> N_eta0;
+        eta0_end >> text_ign >> N_k0 >> text_ign >> N_eta0 >> text_ign >> Phi_init >> text_ign >> Phi_obj;
         
         fichier.close();
         

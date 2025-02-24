@@ -32,6 +32,7 @@ bool unlinear_phi,LMBDdt,RK4,Pressure,Steady, ecrit_time_b, ecrit_tech_b, ecrit_
 // bool melt_bol = 1;
 auto solidus = std::make_tuple(1E2,1E2,1E2,1E2,1E2,1E2);
 auto liquidus = std::make_tuple(1E2,1E2,1E2,1E2,1E2,1E2);
+double Phi_vis_i,Phi_obj;
 
 
 double k0_init,k0_end,eta0_init,eta0_end;
@@ -51,7 +52,7 @@ std::string explor_param = "explor_param.txt";
 Lecture_param(physical_param,rheology,melt,melt_param,thermo,Tm0,Ts,dTc0,Dl_init,Dc_init,dDl_init, dDc_init, LMBD_cr_Ni,LMBD_cr_Si,t0,tstop,Rp,Rc,f,Masse_Mars,gl,gc,fmag,fbase,HPE_factor,X1,X2,Sat_expo,CH2O_p,KH2Ocr,gamma_cr,phi_min_cr);
 lecture_num(numerical_param,dt_min,dt_max, dt_init,DTMAX,dr_min,dr_max,Nc,N_soliq,N_melt,t_acc,t_acc_m,unlinear_phi,LMBDdt,RK4,Pressure,Steady,ecrit_profil_b,ecrit_time_b,ecrit_tech_b, URG_STOP,adv_lith_bool,adv_interf_bool);
 lecture_sol(adress_solidus,solidus,liquidus);
-lecture_explo(explor_param,k0_init,k0_end,eta0_init,eta0_end,N_k0,N_eta0);
+lecture_explo(explor_param,k0_init,k0_end,eta0_init,eta0_end,N_k0,N_eta0,Phi_vis_i,Phi_obj);
 lecture_rad(adress_rad,RAD,tstop,HPE_factor);
 
 
@@ -61,7 +62,7 @@ std::tuple<double,double> dTdz_S;
 std::tuple<double,double,double,double> agecrust_N;
 std::tuple<double,double,double,double> agecrust_S;
 
-double Phi_vis_i = 0.1;
+
 
 double rho_c=std::get<4>(thermo);
 double Dref = 0.2/3.*(pow(Rp,3.)-pow(Rc,3.))/pow(Rp,2.);
@@ -195,7 +196,7 @@ Rl_guess = Rp - (Dl_init-Dc_init + delta_guess) ;
 double Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Rp-Rl_guess-Dc_init) * gl)/1E9 ;
 double Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(liquidus)*Pm_guess*Pm_guess+std::get<3>(liquidus)*Pm_guess*Pm_guess*Pm_guess;
 double Tsol_guess = std::get<0>(solidus)+std::get<1>(solidus)*Pm_guess+std::get<2>(solidus)*Pm_guess*Pm_guess+std::get<3>(solidus)*Pm_guess*Pm_guess*Pm_guess+DTsolidus;
-double Tm0_guess_new = 0.3 * (Tliq_guess-Tsol_guess) + Tsol_guess;
+double Tm0_guess_new = Phi_obj * (Tliq_guess-Tsol_guess) + Tsol_guess;
 
 double Tm0_guess = 0;
 
@@ -226,7 +227,7 @@ Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init + delta_guess) * gl
 Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(liquidus)*Pm_guess*Pm_guess+std::get<3>(liquidus)*Pm_guess*Pm_guess*Pm_guess;
 Tsol_guess = std::get<0>(solidus)+std::get<1>(solidus)*Pm_guess+std::get<2>(solidus)*Pm_guess*Pm_guess+std::get<3>(solidus)*Pm_guess*Pm_guess*Pm_guess+DTsolidus;
 
-Tm0_guess_new = 0.3 * (Tliq_guess-Tsol_guess) + Tsol_guess;
+Tm0_guess_new = Phi_obj * (Tliq_guess-Tsol_guess) + Tsol_guess;
     /* code */
 }
 
