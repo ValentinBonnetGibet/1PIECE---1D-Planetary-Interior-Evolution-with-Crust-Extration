@@ -193,7 +193,7 @@ double DTsolidus=std::get<5>(melt)*Dc_init/Dref;
 double delta_guess = 50E3;
 double Phi_guess,Phi_eff_guess,Va_guess,dmadtm_guess,Rl_guess,LMBD_guess,Vm_guess,Ra_guess,eta_guess;
 Rl_guess = Rp - Dl_init ;
-// First Guess using 75E3 for delta_u
+
 
 double Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init+delta_guess) * gl)/1E9 ;
 double Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(liquidus)*Pm_guess*Pm_guess+std::get<3>(liquidus)*Pm_guess*Pm_guess*Pm_guess;
@@ -230,6 +230,7 @@ Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(li
 Tsol_guess = std::get<0>(solidus)+std::get<1>(solidus)*Pm_guess+std::get<2>(solidus)*Pm_guess*Pm_guess+std::get<3>(solidus)*Pm_guess*Pm_guess*Pm_guess+DTsolidus;
 
 Tm0_guess_new = Phi_obj * (Tliq_guess-Tsol_guess) + Tsol_guess;
+std::cout << rank << " : rank," << " Tm0_guess_new : " << Tm0_guess_new << ", Phi_vis_i : " << Phi_vis_i  << ", delta_guess" <<delta_guess << std::endl;
     /* code */
 }
 
@@ -262,7 +263,7 @@ std::cout << rank << " : rank," <<  "  time :" << (float) (t2_interm-t1_interm)/
 
 
 FILE * resume = fopen(adress_resum ,"a");
-std::fprintf(resume, "%i %i %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",i,rank,t,k0_exp(k_i),eta0_exp(eta_i),Tp, Tm,Tm0, Dc_N, Dc_S, Dl_N, Dl_S, Tc, std::get<3>(agecrust_N) ,std::get<3>(agecrust_S), rho_m,LMBD_cr_N,LMBD_cr_S,LMBD_lith_N,LMBD_lith_S,LMBD_ath,Phi_vis_i);
+std::fprintf(resume, "%i %i %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",i,rank,t,k0_exp(k_i),eta0_exp(eta_i),Tp, Tm,Tm0, Dc_N, Dc_S, Dl_N, Dl_S, Tc, std::get<3>(agecrust_N) ,std::get<3>(agecrust_S), rho_m,LMBD_cr_N,LMBD_cr_S,LMBD_lith_N,LMBD_lith_S,LMBD_ath,Phi_vis_i);
 fclose(resume);
 
 
