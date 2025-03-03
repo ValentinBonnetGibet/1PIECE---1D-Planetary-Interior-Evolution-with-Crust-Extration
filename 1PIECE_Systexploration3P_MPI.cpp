@@ -21,7 +21,7 @@ t1 = clock();
 std::tuple<double,double,double,double,double,double,double,double,double,double,double> rheology;
 std::tuple<double,double,double,double,double,double,double,double> melt;
 std::tuple<bool,double,double,double,double,double,double,double,double> melt_param;
-std::tuple<double,double,double,double,double,double,double,double> unlinear_table;
+
 std::tuple<double,double,double,double,double,double,double,double,double,double,double,double,double> thermo;
 Eigen::MatrixXd RAD = Eigen::MatrixXd::Zero(4,4);
 
@@ -73,7 +73,9 @@ double rho_p = (Masse_Mars - Vc*rho_c)/Vp;
 double rho_m;
 double Vm,Vcr;
 double t = 0;
-if(unlinear_phi == 0){std::get<1>(unlinear_table)=1;}
+
+if(unlinear_phi == 0){std::get<2>(melt_param)=1.0;}
+
 N_tot = (N_k0 * N_eta0) / nb_procs;
 
 
