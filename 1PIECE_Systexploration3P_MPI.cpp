@@ -210,7 +210,7 @@ Tm0_guess = Tm0_guess_new;
 double Tl_guess = Tm0_guess - std::get<4>(rheology) * R/A * Tm0_guess*Tm0_guess;
 double Dm = k_m / rho_p / C_m;
 
-melting(Phi_guess,Phi_eff_guess,Va_guess,dmadtm_guess,Tm0_guess,a_m,C_m,gc,gl,N_melt,Dref,std::get<4>(melt),std::get<5>(melt),rho_cr,rho_m,Dc_init,Dc_init,Rl_guess,Rp,delta_guess,std::get<3>(melt),std::get<6>(melt),
+melting(Phi_guess,Phi_eff_guess,Va_guess,dmadtm_guess,Tm0_guess,a_m,C_m,gc,gl,N_melt,Dref,std::get<4>(melt),std::get<5>(melt),rho_cr,rho_p,Dc_init,Dc_init,Rl_guess,Rp,delta_guess,std::get<3>(melt),std::get<6>(melt),
 melt_param, LMBD_guess,
 solidus,liquidus,rheology);  
 
@@ -262,7 +262,7 @@ std::cout << rank << " : rank," <<  "  time :" << (float) (t2_interm-t1_interm)/
 
 
 FILE * resume = fopen(adress_resum ,"a");
-std::fprintf(resume, "%i %i %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",i,rank,t,k0_exp(k_i),eta0_exp(eta_i),Tp, Tm,Tm0, Dc_N, Dc_S, Dl_N, Dl_S, Tc, std::get<3>(agecrust_N) ,std::get<3>(agecrust_S), rho_m,LMBD_cr_N,LMBD_cr_S,LMBD_lith_N,LMBD_lith_S,LMBD_ath);
+std::fprintf(resume, "%i %i %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",i,rank,t,k0_exp(k_i),eta0_exp(eta_i),Tp, Tm,Tm0, Dc_N, Dc_S, Dl_N, Dl_S, Tc, std::get<3>(agecrust_N) ,std::get<3>(agecrust_S), rho_m,LMBD_cr_N,LMBD_cr_S,LMBD_lith_N,LMBD_lith_S,LMBD_ath,Phi_vis_i);
 fclose(resume);
 
 
