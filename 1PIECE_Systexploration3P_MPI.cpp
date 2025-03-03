@@ -72,7 +72,7 @@ double Vp = 4./3.*M_PI*pow(Rp,3.) - Vc;
 double rho_p = (Masse_Mars - Vc*rho_c)/Vp;
 double rho_m;
 double Vm,Vcr;
-double t = 0;
+double t = t0 *std::get<11>(thermo);
 
 if(unlinear_phi == 0){std::get<2>(melt_param)=1.0;}
 
@@ -192,10 +192,10 @@ double a_m=std::get<7>(thermo);
 double DTsolidus=std::get<5>(melt)*Dc_init/Dref;
 double delta_guess = 50E3;
 double Phi_guess,Phi_eff_guess,Va_guess,dmadtm_guess,Rl_guess,LMBD_guess,Vm_guess,Ra_guess,eta_guess;
-Rl_guess = Rp - (Dl_init-Dc_init + delta_guess) ;
+Rl_guess = Rp - Dl_init ;
 // First Guess using 75E3 for delta_u
 
-double Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Rp-Rl_guess-Dc_init) * gl)/1E9 ;
+double Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init+delta_guess) * gl)/1E9 ;
 double Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(liquidus)*Pm_guess*Pm_guess+std::get<3>(liquidus)*Pm_guess*Pm_guess*Pm_guess;
 double Tsol_guess = std::get<0>(solidus)+std::get<1>(solidus)*Pm_guess+std::get<2>(solidus)*Pm_guess*Pm_guess+std::get<3>(solidus)*Pm_guess*Pm_guess*Pm_guess+DTsolidus;
 double Tm0_guess_new = Phi_obj * (Tliq_guess-Tsol_guess) + Tsol_guess;
@@ -224,7 +224,7 @@ Ra_guess = a_m*rho_p*gl* (Tm0_guess-Tl_guess) *pow(Rp-Rc,3.)/Dm/eta_guess ;
 delta_guess = (Rp-Dl_init-Rc) * pow(Ra_crit_u/Ra_guess,beta_u);
 
 // Second Guess using delta_guess for delta_u
-Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init + delta_guess) * gl)/1E9 ;
+Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init+delta_guess) * gl)/1E9 ;
 
 Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(liquidus)*Pm_guess*Pm_guess+std::get<3>(liquidus)*Pm_guess*Pm_guess*Pm_guess;
 Tsol_guess = std::get<0>(solidus)+std::get<1>(solidus)*Pm_guess+std::get<2>(solidus)*Pm_guess*Pm_guess+std::get<3>(solidus)*Pm_guess*Pm_guess*Pm_guess+DTsolidus;

@@ -26,15 +26,16 @@ bool unlinear_phi,LMBDdt,RK4,Pressure,Steady, ecrit_time_b, ecrit_tech_b, ecrit_
 
 auto solidus = std::make_tuple(1E2,1E2,1E2,1E2,1E2,1E2);
 auto liquidus = std::make_tuple(1E2,1E2,1E2,1E2,1E2,1E2);
-
-
+double Phi_vis_i,Phi_obj;
+double k0_init,k0_end,eta0_init,eta0_end;
+int N_k0,N_eta0,N_tot,N_start = 0,n_run;
 
 // /Users/valentinbonnetgibet/Documents/These/Code Mars/Mars Cpp Dev/
 std::string physical_param = "physical_parameters.txt";
 std::string numerical_param = "numerical_parameters.txt";
 std::string adress_rad = "Radioelement_Wanke.txt";
 std::string adress_solidus = "Solidus.txt";
-
+std::string explor_param = "explor_param.txt";
 
 // std::string fichier_time = "/Users/valentinbonnetgibet/Documents/These/Code Mars/Mars Cpp Dev/time.txt";
 // std::string fichier_profil = "/Users/valentinbonnetgibet/Documents/These/Code Mars/Mars Cpp Dev/profil.txt";
@@ -43,6 +44,7 @@ Lecture_param(physical_param,rheology,melt,melt_param,thermo,Tm0,Ts,dTc0,Dl_init
 lecture_num(numerical_param,dt_min,dt_max, dt_init,DTMAX,dr_min,dr_max,Nc,N_soliq,N_melt,t_acc,t_acc_m,unlinear_phi,LMBDdt,RK4,Pressure,Steady,ecrit_profil_b,ecrit_time_b,ecrit_tech_b, URG_STOP,adv_lith_bool,adv_interf_bool);
 lecture_rad(adress_rad,RAD,tstop,HPE_factor);
 lecture_sol(adress_solidus,solidus,liquidus);
+lecture_explo(explor_param,k0_init,k0_end,eta0_init,eta0_end,N_k0,N_eta0,Phi_vis_i,Phi_obj);
 
 
 
@@ -53,8 +55,7 @@ std::tuple<double,double> dTdz_S;
 std::tuple<double,double,double,double> agecrust_N;
 std::tuple<double,double,double,double> agecrust_S;
 
-double Phi_vis_i = 0.1;
-double Phi_obj = 0.3;
+
 
 double rho_c = std::get<4>(thermo);
 double Dref = 0.2/3.*(pow(Rp,3.)-pow(Rc,3.))/pow(Rp,2.);
@@ -97,10 +98,10 @@ double a_m=std::get<7>(thermo);
 double DTsolidus=std::get<5>(melt)*Dc_init/Dref;
 double delta_guess = 50E3;
 double Phi_guess,Phi_eff_guess,Va_guess,dmadtm_guess,Rl_guess,LMBD_guess,Vm_guess,Ra_guess,eta_guess;
-Rl_guess = Rp - (Dl_init-Dc_init + delta_guess) ;
+Rl_guess = Rp - Dl_init ;
 // First Guess using 75E3 for delta_u
 
-double Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Rp-Rl_guess-Dc_init) * gl)/1E9 ;
+double Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init+delta_guess) * gl)/1E9 ;
 double Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(liquidus)*Pm_guess*Pm_guess+std::get<3>(liquidus)*Pm_guess*Pm_guess*Pm_guess;
 double Tsol_guess = std::get<0>(solidus)+std::get<1>(solidus)*Pm_guess+std::get<2>(solidus)*Pm_guess*Pm_guess+std::get<3>(solidus)*Pm_guess*Pm_guess*Pm_guess+DTsolidus;
 double Tm0_guess_new = Phi_obj * (Tliq_guess-Tsol_guess) + Tsol_guess;
@@ -129,12 +130,13 @@ Ra_guess = a_m*rho_p*gl* (Tm0_guess-Tl_guess) *pow(Rp-Rc,3.)/Dm/eta_guess ;
 delta_guess = (Rp-Dl_init-Rc) * pow(Ra_crit_u/Ra_guess,beta_u);
 
 // Second Guess using delta_guess for delta_u
-Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init + delta_guess) * gl)/1E9 ;
+Pm_guess = (Dc_init * gl * rho_cr + rho_p * (Dl_init-Dc_init+delta_guess) * gl)/1E9 ;
 
 Tliq_guess = std::get<0>(liquidus)+std::get<1>(liquidus)*Pm_guess+std::get<2>(liquidus)*Pm_guess*Pm_guess+std::get<3>(liquidus)*Pm_guess*Pm_guess*Pm_guess;
 Tsol_guess = std::get<0>(solidus)+std::get<1>(solidus)*Pm_guess+std::get<2>(solidus)*Pm_guess*Pm_guess+std::get<3>(solidus)*Pm_guess*Pm_guess*Pm_guess+DTsolidus;
 
 Tm0_guess_new = Phi_obj * (Tliq_guess-Tsol_guess) + Tsol_guess;
+std::cout << "Tm0_guess_new : " << Tm0_guess_new << ", Phi_vis_i : " << Phi_vis_i  << ", delta_guess" <<delta_guess << std::endl;
     /* code */
 }
 
@@ -151,6 +153,7 @@ dossier_time,dossier_tech, dossier_profilN,dossier_profilS,ecrit_profil_b,ecrit_
 );
 
 std::cout << "Initial Phi : " << Phi_vis_i << std::endl;
+std::cout << "Dichotomy : " << Dc_S-Dc_N << std::endl;
 std::cout << "Temps extraction nord (Gyr) : "  << std::get<3>(agecrust_N)/1E9  << std::endl;
 std::cout << "Temps extraction sud (Gyr) :"  << std::get<3>(agecrust_S)/1E9  << std::endl;
 
