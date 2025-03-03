@@ -105,7 +105,7 @@ char *dossier
 
 
 void ecriture_tech(double const &t, double const &dt, double const &qsurf_N,double const &qsurf_S, double const &qc,double const &T_avg,double const &Ra,
-double const &P_prim, double const &P_tot, double const &dQs, double const &dU, double const &epsi_m, double const &St, double const &dmadtm, double const &ql_N, double const &ql_S, double const &HaT_N, double const &HaT_S,
+double const &P_prim, double const &P_tot, double const &dQs, double const &dU, double const &epsi_m, double const &St, double const &dmadtm, double const &ql_N, double const &ql_S, double const &HaT_N, double const &HaT_S, double const &Va_N, double const &Va_S,
 char *dossier
 ){
 
@@ -113,7 +113,7 @@ char *dossier
     FILE * fichier = fopen(dossier,"a");
 
    
-    std::fprintf(fichier, "%e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e  \n",t,dt,qsurf_N,qsurf_S,qc,T_avg,Ra,P_prim, P_tot,dQs,dU,epsi_m,St,dmadtm,ql_N,ql_S,HaT_N,HaT_S);
+    std::fprintf(fichier, "%e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e  \n",t,dt,qsurf_N,qsurf_S,qc,T_avg,Ra,P_prim, P_tot,dQs,dU,epsi_m,St,dmadtm,ql_N,ql_S,HaT_N,HaT_S,Va_N,Va_S);
     fclose(fichier);
 
 }

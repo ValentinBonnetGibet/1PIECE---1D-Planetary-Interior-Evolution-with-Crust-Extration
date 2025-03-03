@@ -230,7 +230,7 @@ double Vlith_melt_N;
 double Vlith_melt_S;
 double qmoho_N;
 double qmoho_S;
-double Va_avg;
+double Va_avg,Va_N,Va_S;
 double dmadtm;
 double qm_N;
 double qm_S;
@@ -314,7 +314,7 @@ while( t < (tstop)*an_s && stop == 0 && Ra_avg > std::get<9>(rheology)*10.0)
     P_ath,Tm,Tc,f,Rl_N,Rl_S,Dc_N,Dc_S,
     Rp,Rc,Vc,Ac,Ts,gl,gc,Tb,a_m,k_m,C_m,C_c,C_cr,rho_c,rho_m,
     rho_cr,L_m,LMBD_ath,LMBD_liq_N,LMBD_liq_S,Dref,solidus,liquidus,melt,rheology,RAD,Pm,an_s,ql_N,ql_S,epsi_c,contact,melt_bol,adv_interf_bool,melt_param,N_melt, Phi_vis_N, Phi_vis_S,
-    Tl, epsi_m, Ra_avg, dBLH, dBLC_N, dBLC_S,dBLC_avg, eta_u_N,eta_u_S, Phi_avg, Phi_N, Phi_S, Phi_eff_N, Phi_eff_S, Va_avg, dmadtm, qm_N, qm_S, qcr_N, qcr_S, qc,St
+    Tl, epsi_m, Ra_avg, dBLH, dBLC_N, dBLC_S,dBLC_avg, eta_u_N,eta_u_S, Phi_avg, Phi_N, Phi_S, Phi_eff_N, Phi_eff_S, Va_avg,Va_N,Va_S, dmadtm, qm_N, qm_S, qcr_N, qcr_S, qc,St
 );  
     if(t == 0){ dt = dt_init*an_s;} // Initial time step in the parameters
     else{   // time step calculation  
@@ -361,7 +361,7 @@ while( t < (tstop)*an_s && stop == 0 && Ra_avg > std::get<9>(rheology)*10.0)
     P_ath,Tm,Tc,f,Rl_N,Rl_S,Dc_N,Dc_S,
     Rp,Rc,Vc,Ac,Ts,gl,gc,Tb,a_m,k_m,C_m,C_c,C_cr,rho_c,rho_m,
     rho_cr,L_m,LMBD_ath,LMBD_liq_N,LMBD_liq_S,Dref,solidus,liquidus,melt,rheology,RAD,Pm,an_s,ql_N,ql_S,epsi_c,contact,melt_bol,adv_interf_bool,melt_param, N_melt, Phi_vis_N, Phi_vis_S,
-    Tl, epsi_m, Ra_avg, dBLH, dBLC_N, dBLC_S,dBLC_avg, eta_u_N,eta_u_S, Phi_avg, Phi_N, Phi_S, Phi_eff_N, Phi_eff_S, Va_avg, dmadtm, qm_N, qm_S, qcr_N, qcr_S, qc, St
+    Tl, epsi_m, Ra_avg, dBLH, dBLC_N, dBLC_S,dBLC_avg, eta_u_N,eta_u_S, Phi_avg, Phi_N, Phi_S, Phi_eff_N, Phi_eff_S, Va_avg, Va_N,Va_S, dmadtm, qm_N, qm_S, qcr_N, qcr_S, qc, St
 );
     if(t == 0){ dt = dt_init*an_s;} else{
     dt2 =dr_min / (4*std::max({std::abs(dDldt_N),std::abs(dDldt_S),std::abs(dDcdt_N),std::abs(dDcdt_S)}));
@@ -531,7 +531,7 @@ while( t < (tstop)*an_s && stop == 0 && Ra_avg > std::get<9>(rheology)*10.0)
     // std::cout << "ql_S = " << ql_S << std::endl;
 
     if(ecrit_time_b == 1){ecriture_time(t/an_s,Tl,Tm,Tc,Tb,Tcr_N,Tcr_S, Dl_N,Dl_S,Dc_N,Dc_S,dBLC_N,dBLC_S,dBLH,Phi_eff_N,Phi_N,Phi_eff_S,Phi_S,rho_m,Phi_cr_avg_N,Phi_cr_avg_S,Phi_cr_max_N,Phi_cr_max_S,Vcr_melt_N,Vcr_melt_S,Phi_lith_avg_N,Phi_lith_avg_S,Vlith_melt_N,Vlith_melt_S,P_ath,LMBD_ath,LMBD_lith_N,LMBD_lith_S,LMBD_cr_N,LMBD_cr_S,Vcr_melt_N,Vcr_melt_S,qmoho_N,qmoho_S,dossier_time);}
-    if(ecrit_tech_b == 1){ecriture_tech(t/an_s,dt,qsurf_N,qsurf_S,qc,T_avg,Ra_avg,P_prim,H_tot,Qs,dU,epsi_m,St,dmadtm,ql_N,ql_S,HaT_N,HaT_S,dossier_tech);}
+    if(ecrit_tech_b == 1){ecriture_tech(t/an_s,dt,qsurf_N,qsurf_S,qc,T_avg,Ra_avg,P_prim,H_tot,Qs,dU,epsi_m,St,dmadtm,ql_N,ql_S,HaT_N,HaT_S,Va_N,Va_S,dossier_tech);}
 //P_prim,H_tot,Qs,dU,epsi_m,St,dmadtm
     T1_N.resize(N_N);
     T1_S.resize(N_S);
@@ -684,7 +684,7 @@ std::get<1>(dTdz_S) =  -(T_S(Nm_S-1)-T_S(Nm_S))/(R1_S(Nm_S-1)-R1_S(Nm_S));}
 else{std::get<1>(dTdz_S) = std::get<0>(dTdz_S);}
 
 if(ecrit_time_b == 1){ecriture_time(t/an_s,Tl,Tm,Tc,Tb,Tcr_N,Tcr_S, Dl_N,Dl_S,Dc_N,Dc_S,dBLC_N,dBLC_S,dBLH,Phi_eff_N,Phi_N,Phi_eff_S,Phi_S,rho_m,Phi_cr_avg_N,Phi_cr_avg_S,Phi_cr_max_N,Phi_cr_max_S,Vcr_melt_N,Vcr_melt_S,Phi_lith_avg_N,Phi_lith_avg_S,Vlith_melt_N,Vlith_melt_S,P_ath,LMBD_ath,LMBD_lith_N,LMBD_lith_S,LMBD_cr_N,LMBD_cr_S,Vcr_melt_N,Vcr_melt_S,qmoho_N,qmoho_S,dossier_time);}
-if(ecrit_tech_b == 1){ecriture_tech(t/an_s,dt,qsurf_N,qsurf_S,qc,T_avg,Ra_avg,P_prim,H_tot,Qs,dU,epsi_m,St,dmadtm,ql_N,ql_S,HaT_N,HaT_S,dossier_tech);}
+if(ecrit_tech_b == 1){ecriture_tech(t/an_s,dt,qsurf_N,qsurf_S,qc,T_avg,Ra_avg,P_prim,H_tot,Qs,dU,epsi_m,St,dmadtm,ql_N,ql_S,HaT_N,HaT_S,Va_N,Va_S,dossier_tech);}
 
 if(stop == 0){std::cout << "Run termine sans probleme" << std::endl;} else { std::cout << "Run termine avec probleme" << std::endl;}
 return stop;

@@ -462,7 +462,7 @@ double const &C_cr,double const &rho_c,double const &rho_m,double const &rho_cr,
 std::tuple<double,double,double,double,double,double> const &solidus, std::tuple<double,double,double,double,double,double> const &liquidus, std::tuple<double,double,double,double,double,double,double,double> const &melt,
 std::tuple<double,double,double,double,double,double,double,double,double,double,double> const &rheology, Eigen::MatrixXd const &RAD,
 std::tuple<double,double,double> const &Pm, double const &an_s, double const &ql_N, double const &ql_S, double const &epsi_c, std::tuple<bool,bool> contact, bool const &melt_bol,  double const &adv_interf_bool, std::tuple<bool,double,double,double,double,double,double,double,double> const &melt_param, int const &N_melt, double &Phi_vis_N, double &Phi_vis_S,
-double &Tl, double &epsi_m,double &Ra_avg, double &dBLH, double &dBLC_N,  double &dBLC_S, double &dBLC_avg, double &eta_u_N,double &eta_u_S, double &Phi_avg,double &Phi_N,double &Phi_S, double &Phi_eff_N, double &Phi_eff_S, double &Va_avg, double &dmadtm, double &qm_N, double &qm_S, double &qcr_N, double &qcr_S, double &qc, double &St
+double &Tl, double &epsi_m,double &Ra_avg, double &dBLH, double &dBLC_N,  double &dBLC_S, double &dBLC_avg, double &eta_u_N,double &eta_u_S, double &Phi_avg,double &Phi_N,double &Phi_S, double &Phi_eff_N, double &Phi_eff_S, double &Va_avg, double &Va_N,double &Va_S, double &dmadtm, double &qm_N, double &qm_S, double &qcr_N, double &qcr_S, double &qc, double &St
 ){
 
     double D_m=k_m/rho_m/C_m;
@@ -538,8 +538,8 @@ double &Tl, double &epsi_m,double &Ra_avg, double &dBLH, double &dBLC_N,  double
     Phi_avg = 0;
     
 
-    Phi_N=0, Phi_eff_N =0; double Va_N =0, dmadtm_N = 0;
-    Phi_S=0, Phi_eff_S =0; double Va_S =0, dmadtm_S = 0;
+    Phi_N=0, Phi_eff_N =0; double dmadtm_N = 0;
+    Phi_S=0, Phi_eff_S =0; double dmadtm_S = 0;
 
     if(melt_bol == 1) {
         
@@ -617,7 +617,7 @@ double &Tl, double &epsi_m,double &Ra_avg, double &dBLH, double &dBLC_N,  double
     
     Phi_vis_N = Phi_N*Va_N / Vm_N;
     Phi_vis_S = Phi_S*Va_S / Vm_S;
-    std::cout <<" Phi vis N = " <<Phi_vis_N << ", phi vis S = " << Phi_vis_S << std::endl;
+    // std::cout <<" Phi vis N = " <<Phi_vis_N << ", phi vis S = " << Phi_vis_S << std::endl;
     epsi_m = epsilon(Tm,Tc,Tl,Tb,Rc,Rl,dBLH,dBLC_avg);
     dtmdt = (-(qm_N+qcr_N)*Am_N-(qm_S+qcr_S)*Am_S+Qm*Vm+qc*Ac)/(C_m*rho_m*Vm*epsi_m*(St+1));
     dtcdt = (-qc * Ac)/(C_c*rho_c*Vc*epsi_c);
