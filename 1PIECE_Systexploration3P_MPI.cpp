@@ -252,7 +252,6 @@ t,Tm,Tc,Tp,Phicrmax_N,Phicrmax_S,Dl_N,Dl_S,Dc_N,Dc_S,dBLC_N,dBLC_S,agecrust_N,ag
 dossier_time,dossier_tech, dossier_profilN,dossier_profilS,ecrit_profil_b,ecrit_time_b,ecrit_tech_b,URG_STOP,adv_lith_bool,adv_interf_bool
 );
 
-
 Volume(Vm,Rp-Dc_N,Rp-Dc_S,Rc,f);
 Vcr=Vp-Vm;
 rho_m=(Vp*rho_p-Vcr*std::get<3>(thermo))/Vm;

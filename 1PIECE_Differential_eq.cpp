@@ -538,8 +538,8 @@ double &Tl, double &epsi_m,double &Ra_avg, double &dBLH, double &dBLC_N,  double
     Phi_avg = 0;
     
 
-    Phi_N=0, Phi_eff_N =0; double dmadtm_N = 0;
-    Phi_S=0, Phi_eff_S =0; double dmadtm_S = 0;
+    Phi_N=0, Va_N = 0, Phi_eff_N =0; double dmadtm_N = 0;
+    Phi_S=0, Va_S = 0, Phi_eff_S =0; double dmadtm_S = 0;
 
     if(melt_bol == 1) {
         
